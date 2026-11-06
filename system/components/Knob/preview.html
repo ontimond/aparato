@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Knob</title><link rel="stylesheet" href="../../tokens.css"><link rel="stylesheet" href="../bundle.css"></head>
+<body>
+<div class="ap-stage" style="align-items: center">
+  <div class="ap-ctl">
+    <div class="ap-dial">
+      <span class="ap-scale ap-scale--accent" style="left: 29.5px; top: 19.5px; transform: translate(-50%, -50%) rotate(-30deg)">uv</span>
+      <span class="ap-scale" style="left: 50px; top: 14px; transform: translate(-50%, -50%)">0</span>
+      <span class="ap-scale ap-scale--accent" style="left: 70.5px; top: 19.5px; transform: translate(-50%, -50%) rotate(30deg)">ir</span>
+      <button class="ap-knob" role="slider" aria-label="lamp" aria-valuemin="0" aria-valuemax="2" aria-valuenow="1" aria-valuetext="off" data-labels="uv off ir"></button>
+    </div>
+    <span class="ap-cap">lamp</span>
+  </div>
+  <div class="ap-ctl">
+    <div class="ap-knurl-wrap">
+      <span class="ap-pointer" aria-hidden="true"></span>
+      <div class="ap-knurl" tabindex="0" role="slider" aria-label="volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40"></div>
+    </div>
+    <span class="ap-cap">volume</span>
+  </div>
+</div>
+<script src="../bundle.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Aparato</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--ground); color: var(--ink); overflow: hidden; }
+  .cover { position: relative; height: 288px; overflow: hidden; }
+  .art { position: absolute; top: 0; left: 480px; width: 480px; height: 288px; overflow: hidden; }
+  .art svg { display: block; width: 480px; height: 288px; }
+  .frame { fill: var(--frame); }
+  .cut { fill: var(--ground); }
+  .dish { fill: var(--frame-hi); }
+  .signal { fill: var(--signal); }
+  .olive { fill: var(--olive); }
+  .graphite { fill: var(--graphite); }
+  .alu { fill: var(--alu); }
+  .sm { rx: var(--radius-sm); }
+  .xs { rx: var(--radius-xs); }
+  .words { position: absolute; left: var(--space-8); bottom: var(--space-8); max-width: 440px; }
+  .name { margin: 0; font: 600 96px/.92 var(--font-sans); letter-spacing: -.03em; color: var(--ink); }
+  .tag { margin: var(--space-2) 0 0 4px; font: 400 14px/20px var(--font-sans); color: var(--ink-muted); }
+</style>
+<link rel="stylesheet" href="../../tokens.css"><link rel="stylesheet" href="../bundle.css">
+</head>
+<body>
+<div class="cover">
+<div class="art" aria-hidden="true">
+<svg viewBox="0 0 480 288" width="480" height="288">
+<!--
+  blocks      frame 232×72 (the key bank) · signal 112×120 (the rocker, the one signal) · olive disc r48 (the main push button) · graphite 240×280 bled off the top and right (lever and slot black) — ≈38% of 960×288
+  arrangement a modular panel: key bank over rocker and button on the left, one dark slab right; bottoms on one line space-6 above the edge; space-4 gutters
+  pattern     tiles, from the square keys and their dishes: four ground-coloured squares cut into the frame at a 56px pitch, each with a lit dish, one signal dot; on the slab, the knurled knob as an alu disc with its signal pointer
+  scales      sides in space-2 multiples; gutters space-4; key pitch 56 (key 52 + 4, on the space grid); dish r20 (44/50 of the key, as KeyBank); corners radius-xs on keys and rocker, radius-sm on frame and slab
+-->
+<rect class="frame sm" x="16" y="48" width="232" height="72" rx="6"/>
+<rect class="cut xs" x="24" y="58" width="52" height="52" rx="3"/>
+<rect class="cut xs" x="80" y="58" width="52" height="52" rx="3"/>
+<rect class="cut xs" x="136" y="58" width="52" height="52" rx="3"/>
+<rect class="cut xs" x="192" y="58" width="52" height="52" rx="3"/>
+<circle class="dish" cx="50" cy="84" r="20"/>
+<circle class="dish" cx="106" cy="84" r="20"/>
+<circle class="dish" cx="162" cy="84" r="20"/>
+<circle class="dish" cx="218" cy="84" r="20"/>
+<circle class="signal" cx="106" cy="84" r="7"/>
+<rect class="signal xs" x="16" y="144" width="112" height="120" rx="3"/>
+<circle class="olive" cx="196" cy="216" r="48"/>
+<rect class="graphite sm" x="264" y="-16" width="232" height="280" rx="6"/>
+<polygon class="signal" points="296,124 316,136 296,148"/>
+<circle class="alu" cx="384" cy="136" r="56"/>
+</svg>
+</div>
+<div class="words">
+  <h1 class="name">Aparato</h1>
+  <p class="tag">precision appliance: light panel, graphite and one orange signal.</p>
+</div>
+</div>
+</body>
+</html>

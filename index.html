@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aparato</title>
+<link rel="stylesheet" href="system/tokens.css">
+<link rel="stylesheet" href="system/components/bundle.css">
+<style>
+  /* one row per component: name, usage and state on the left; the live control on the right, on the panel.
+     Colours, type and spacing: the Aparato tokens (tokens.css), a single light theme. */
+  .page { max-width: 60rem; margin: 0 auto; padding-block: var(--space-8) 64px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .top { display: grid; gap: var(--space-2); padding-bottom: var(--space-8); }
+  h1 { margin: 0; font: 600 28px/32px var(--font-sans); text-wrap: balance; }
+  h2 { margin: 0; font: 600 16px/20px var(--font-sans); }
+  .top p, .hint { margin: 0; max-width: 60ch; color: var(--ink-muted); }
+  a { color: var(--ink); }
+  a:hover { color: var(--signal-ink); }
+  /* panel grooves: a shadow line with the white highlight below it */
+  .bench { border-bottom: 1px solid var(--frame); box-shadow: 0 1px 0 var(--ground-hi); }
+  .row { display: grid; grid-template-columns: 16rem minmax(0, 1fr); align-items: center; gap: var(--space-4) var(--space-8); padding-block: var(--space-6);
+    border-top: 1px solid var(--frame); box-shadow: inset 0 1px 0 var(--ground-hi); }
+  .about { display: grid; gap: var(--space-1); min-width: 0; }
+  .tag { margin: 0; font: 500 11px/12px var(--font-sans); color: var(--ink-muted); }
+  .hint { margin-top: var(--space-1); }
+  .read { display: grid; gap: var(--space-1); margin-top: var(--space-2); font-variant-numeric: tabular-nums; }
+  .row > .ap-stage { padding: var(--space-2) 0; }
+  @media (max-width: 40rem) { .row { grid-template-columns: minmax(0, 1fr); } }
+  .credits { padding-top: var(--space-6); }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header class="top">
+    <h1>aparato</h1>
+    <p>skeuomorphic design system in css: a precision appliance. every control works, and each row shows its state live.</p>
+  </header>
+
+  <main class="bench">
+    <section class="row" aria-labelledby="h-keys">
+      <div class="about">
+        <h2 id="h-keys">keys</h2>
+        <p class="tag">KeyBank</p>
+        <p class="hint">press a key or use the arrow keys. only one stays selected, with the orange dot.</p>
+        <div class="read"><output id="o-keys" class="ap-scale">band: am</output></div>
+      </div>
+      <div class="ap-stage">
+        <div class="ap-bank">
+          <div class="ap-keys" role="radiogroup" aria-label="band">
+            <label class="ap-key"><input type="radio" name="band" id="k-fm" aria-label="fm"><span></span></label>
+            <label class="ap-key"><input type="radio" name="band" id="k-am" aria-label="am" checked><span></span></label>
+            <label class="ap-key"><input type="radio" name="band" id="k-sw" aria-label="short wave"><span></span></label>
+            <label class="ap-key"><input type="radio" name="band" id="k-phono" aria-label="phono"><span></span></label>
+          </div>
+          <div class="ap-key-caps ap-scale" aria-hidden="true"><span>fm</span><span>am</span><span>sw</span><span>phono</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="row" aria-labelledby="h-buttons">
+      <div class="about">
+        <h2 id="h-buttons">buttons</h2>
+        <p class="tag">PushButton · cream, olive, signal and momentary</p>
+        <p class="hint">each push presses the button in or releases it, and the led follows. pressed, it loses its long shadow. seek is momentary: it comes back on release and has no led.</p>
+        <div class="read"><output id="o-buttons" class="ap-scale">pressed: radio</output></div>
+      </div>
+      <div class="ap-stage">
+        <div class="ap-ctl"><span class="ap-led"></span><button class="ap-push ap-push--olive" id="b-radio" aria-pressed="true" aria-label="radio"></button><span class="ap-cap">radio</span></div>
+        <div class="ap-ctl"><span class="ap-led"></span><button class="ap-push" id="b-auto" aria-pressed="false" aria-label="auto"></button><span class="ap-cap">auto</span></div>
+        <div class="ap-ctl"><span class="ap-led"></span><button class="ap-push" id="b-mono" aria-pressed="false" aria-label="mono"></button><span class="ap-cap">mono</span></div>
+        <div class="ap-ctl"><button class="ap-push" id="b-seek" aria-label="seek"></button><span class="ap-cap">seek</span></div>
+        <div class="ap-ctl"><span class="ap-led"></span><button class="ap-push ap-push--signal" id="b-power" aria-pressed="false" aria-label="power"></button><span class="ap-cap">power</span></div>
+      </div>
+    </section>
+
+    <section class="row" aria-labelledby="h-knobs">
+      <div class="about">
+        <h2 id="h-knobs">knobs</h2>
+        <p class="tag">Knob · selector and knurled</p>
+        <p class="hint">selector: click or arrow keys, three positions. knurled: drag in a circle, use the wheel or the arrow keys.</p>
+        <div class="read">
+          <output id="o-lamp" class="ap-scale">lamp: off · 0°</output>
+          <output id="o-volume" class="ap-scale">volume: 40 · −27°</output>
+        </div>
+      </div>
+      <div class="ap-stage" style="align-items: center">
+        <div class="ap-ctl">
+          <div class="ap-dial">
+            <span class="ap-scale ap-scale--accent" style="left: 29.5px; top: 19.5px; transform: translate(-50%, -50%) rotate(-30deg)">uv</span>
+            <span class="ap-scale" style="left: 50px; top: 14px; transform: translate(-50%, -50%)">0</span>
+            <span class="ap-scale ap-scale--accent" style="left: 70.5px; top: 19.5px; transform: translate(-50%, -50%) rotate(30deg)">ir</span>
+            <button class="ap-knob" id="k-lamp" role="slider" aria-label="lamp" aria-valuemin="0" aria-valuemax="2" aria-valuenow="1" aria-valuetext="off" data-labels="uv off ir"></button>
+          </div>
+          <span class="ap-cap">lamp</span>
+        </div>
+        <div class="ap-ctl">
+          <div class="ap-knurl-wrap">
+            <span class="ap-pointer" aria-hidden="true"></span>
+            <div class="ap-knurl" id="k-volume" tabindex="0" role="slider" aria-label="volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40"></div>
+          </div>
+          <span class="ap-cap">volume</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="row" aria-labelledby="h-channel">
+      <div class="about">
+        <h2 id="h-channel">channel</h2>
+        <p class="tag">ChannelSwitch</p>
+        <p class="hint">press a number or its line, or use the arrow keys. the arrow turns to that position and the light does not turn with it.</p>
+        <div class="read"><output id="o-channel" class="ap-scale">channel: 4</output></div>
+      </div>
+      <div class="ap-stage">
+        <div class="ap-ctl">
+          <div class="ap-chan" role="radiogroup" aria-label="channel">
+            <span class="ap-chan-arrow" aria-hidden="true"></span>
+            <label class="ap-chan-step"><input type="radio" name="channel" value="1"><span class="ap-scale">1</span></label>
+            <label class="ap-chan-step"><input type="radio" name="channel" value="2"><span class="ap-scale">2</span></label>
+            <label class="ap-chan-step"><input type="radio" name="channel" value="3"><span class="ap-scale">3</span></label>
+            <label class="ap-chan-step"><input type="radio" name="channel" value="4" checked><span class="ap-scale">4</span></label>
+            <label class="ap-chan-step"><input type="radio" name="channel" value="5"><span class="ap-scale">5</span></label>
+            <label class="ap-chan-step"><input type="radio" name="channel" value="6"><span class="ap-scale">6</span></label>
+            <label class="ap-chan-step"><input type="radio" name="channel" value="7"><span class="ap-scale">7</span></label>
+          </div>
+          <span class="ap-cap">channel</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="row" aria-labelledby="h-levers">
+      <div class="about">
+        <h2 id="h-levers">levers</h2>
+        <p class="tag">Lever · flat and cylinder</p>
+        <p class="hint">click or space to go from 0 to 1. down is on.</p>
+        <div class="read"><output id="o-levers" class="ap-scale">filter: 1 · speaker: 1 · bass: 0</output></div>
+      </div>
+      <div class="ap-stage">
+        <div class="ap-ctl">
+          <div class="ap-lever-ctl"><span class="ap-scale">0</span><span class="ap-scale">1</span><input type="checkbox" class="ap-lever" id="p-filter" role="switch" aria-label="filter" checked></div>
+          <span class="ap-cap">filter</span>
+        </div>
+        <div class="ap-ctl">
+          <div class="ap-lever-ctl"><span class="ap-scale">0</span><span class="ap-scale">1</span><input type="checkbox" class="ap-lever ap-lever--bat" id="p-speaker" role="switch" aria-label="speaker" checked></div>
+          <span class="ap-cap">speaker</span>
+        </div>
+        <div class="ap-ctl">
+          <div class="ap-lever-ctl"><span class="ap-scale">0</span><span class="ap-scale">1</span><input type="checkbox" class="ap-lever ap-lever--bat" id="p-bass" role="switch" aria-label="bass"></div>
+          <span class="ap-cap">bass</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="row" aria-labelledby="h-rockers">
+      <div class="about">
+        <h2 id="h-rockers">rockers</h2>
+        <p class="tag">Rocker</p>
+        <p class="hint">click or space to turn on. the led lights with it.</p>
+        <div class="read"><output id="o-rockers" class="ap-scale">mains: 1 · light: 0</output></div>
+      </div>
+      <div class="ap-stage">
+        <div class="ap-ctl"><span class="ap-led"></span><input type="checkbox" class="ap-rocker" id="s-mains" role="switch" aria-label="mains" checked><span class="ap-cap">mains</span></div>
+        <div class="ap-ctl"><span class="ap-led"></span><input type="checkbox" class="ap-rocker" id="s-light" role="switch" aria-label="light"><span class="ap-cap">light</span></div>
+      </div>
+    </section>
+
+    <section class="row" aria-labelledby="h-parts">
+      <div class="about">
+        <h2 id="h-parts">loose parts</h2>
+        <p class="tag">led, pointer, scale and label</p>
+        <p class="hint">the parts the controls are built from, with their class, in case you need them on their own.</p>
+      </div>
+      <div class="ap-stage">
+        <div class="ap-ctl"><span class="ap-led"></span><span class="tag">ap-led</span></div>
+        <div class="ap-ctl"><span class="ap-led ap-led--on"></span><span class="tag">ap-led--on</span></div>
+        <div class="ap-ctl"><span class="ap-pointer"></span><span class="tag">ap-pointer</span></div>
+        <div class="ap-ctl"><span class="ap-scale">0  1  16  33  45</span><span class="tag">ap-scale</span></div>
+        <div class="ap-ctl"><span class="ap-scale ap-scale--accent">uv · ir</span><span class="tag">ap-scale--accent</span></div>
+        <div class="ap-ctl"><span class="ap-cap">power</span><span class="tag">ap-cap</span></div>
+      </div>
+    </section>
+  </main>
+  <footer class="credits">
+    <p class="hint">original design: <a href="https://dribbble.com/shots/597337-Braun-UI">braun ui</a>, by adrien olczak. values measured from a <a href="https://www.deviantart.com/yesimadesigner/art/Free-Website-UI-.PSD-425937630">psd</a> posted by yesimadesigner. not affiliated with braun.</p>
+  </footer>
+</div>
+
+<script src="system/components/bundle.js"></script>
+<script>
+  // button and knob behaviour lives in bundle.js; here the state is only read
+  var $ = function (s) { return document.querySelector(s); };
+  var deg = function (n) { return String(n).replace('-', '−') + '°'; };
+
+  function onoff(ids) {
+    return ids.map(function (id) { var el = $('#' + id); return el.getAttribute('aria-label') + ': ' + (el.checked ? 1 : 0); }).join(' · ');
+  }
+  function read() {
+    var sel = $('#k-lamp'), v = +$('#k-volume').getAttribute('aria-valuenow');
+    $('#o-keys').textContent = 'band: ' + $('input[name="band"]:checked').getAttribute('aria-label');
+    var down = [].filter.call(document.querySelectorAll('.ap-push'), function (b) { return b.getAttribute('aria-pressed') === 'true'; });
+    $('#o-buttons').textContent = 'pressed: ' + (down.map(function (b) { return b.getAttribute('aria-label'); }).join(', ') || 'none');
+    $('#o-lamp').textContent = 'lamp: ' + sel.getAttribute('aria-valuetext') + ' · ' + deg((sel.getAttribute('aria-valuenow') - 1) * 30);
+    $('#o-volume').textContent = 'volume: ' + v + ' · ' + deg(Math.round(v * 2.7 - 135));
+    $('#o-channel').textContent = 'channel: ' + $('input[name="channel"]:checked').value;
+    $('#o-levers').textContent = onoff(['p-filter', 'p-speaker', 'p-bass']);
+    $('#o-rockers').textContent = onoff(['s-mains', 's-light']);
+  }
+
+  document.addEventListener('change', read);
+  read();
+</script>
+</body>
+</html>

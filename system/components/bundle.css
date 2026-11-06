@@ -1,0 +1,245 @@
+/* Aparato. Values taken from the layer effects of the reference PSD, at 1x size.
+   Global light at 30° (top right). Long shadows are painted and fall straight down. */
+:root {
+  --ring: linear-gradient(var(--frame), var(--frame-hi));                       /* outer gradient stroke of each recess */
+  --ring-knob: linear-gradient(var(--frame), var(--frame-hi) 80%, #8f8984);
+  --rail: linear-gradient(#fff 27.5%, var(--signal-glow) 58.75%);               /* pink rims of the rocker */
+}
+
+body { margin: 0; min-height: 100vh; font: 400 14px/20px var(--font-sans); color: var(--ink);
+  background: linear-gradient(178deg, var(--ground-hi) -115px, var(--ground-shade) 547px); }
+.ap-stage { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-8); padding: var(--space-6); }
+.ap-cap { font: 600 12px/16px var(--font-sans); color: var(--ink); text-shadow: var(--emboss); }
+.ap-scale { font: 500 11px/12px var(--font-sans); color: var(--ink); text-shadow: var(--emboss); }
+.ap-scale--accent { color: var(--signal-ink); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+/* ponytail: the PSD only draws a flat 6.5px disc, on. The 1.5px collar, the highlight, the inner shadow and the dark off state are not in the reference.
+   The box stays at 9px and appears as 12px. The collar has z-index: -1, so the LED always goes inside .ap-ctl. When turning on, only the color and the shadow change: changing the image would skip the Rocker's 50 ms */
+.ap-led { position: relative; width: 9px; height: 9px; border-radius: 50%;
+  background: radial-gradient(circle 1.4px at 6.45px 3.38px, rgb(255 255 255 / .95), rgb(255 255 255 / 0)),
+    radial-gradient(circle 5px at 6.45px 3.38px, rgb(255 255 255 / .22), rgb(255 255 255 / 0)), var(--graphite);
+  box-shadow: inset 0 0 3px #000; }
+.ap-led::before { content: ""; position: absolute; inset: -1.5px; z-index: -1; border-radius: 50%; background: var(--ring); box-shadow: var(--emboss); }
+.ap-led--on, .ap-ctl:has([aria-pressed="true"]) .ap-led, .ap-ctl:has(.ap-rocker:checked) .ap-led { background-color: var(--signal); box-shadow: inset 0 0 3px var(--signal-deep); }
+/* isolation: long shadows stay inside the control; the label goes above them */
+.ap-ctl { position: relative; isolation: isolate; display: inline-grid; justify-items: center; gap: var(--space-3); }
+.ap-ctl > .ap-cap { position: relative; }
+
+/* PushButton: 3px ring, 40px rim and 36px concave face with a reflection at the bottom (vmsk path of the PSD, not the layer rectangle) */
+.ap-push { --face: linear-gradient(var(--cream-deep) -25%, var(--cream-shade) 54.5%, var(--cream) 125%);
+  --rim: linear-gradient(#e6e9d7 -12.5%, #c2c9af 52.5%, #878787 112.5%);
+  --face-line: inset 0 1px 0 rgb(0 0 0 / .15); --edge: rgb(255 255 255 / .27); --rim-line: #565050; --glint: .95;
+  --cast: 1;
+  position: relative; width: 46px; height: 46px; box-sizing: border-box; padding: 0; border: 3px solid transparent; border-radius: 50%; cursor: pointer;
+  background: var(--rim) padding-box, var(--ring) border-box;
+  box-shadow: inset 0 0 0 1px var(--rim-line); }
+.ap-push::before { content: ""; position: absolute; inset: 2px; border-radius: 50%;
+  background: radial-gradient(11px 7px at 50% 84%, rgb(255 255 255 / var(--glint)) 20%, rgb(255 255 255 / 0)), var(--face);
+  box-shadow: var(--face-line), 0 0 0 1px var(--edge); }
+/* painted shadow of the PSD: halo (Shape 31) + long shape (2× Shape 4), stacked with mask-composite.
+   It passes over the ring; the clip leaves the 40px rim free (20px circle). The halo sits 0.5px to the left and 4.5px down. */
+.ap-push::after { content: ""; position: absolute; left: -6px; top: -5px; width: 51px; height: 81px; opacity: var(--cast); pointer-events: none;
+  background: #000;
+  mask: radial-gradient(20px 23px at 25.5px 29.5px, rgb(0 0 0 / .99) 0%, rgb(0 0 0 / .98) 16%, rgb(0 0 0 / .94) 28%, rgb(0 0 0 / .89) 36%, rgb(0 0 0 / .76) 48%, rgb(0 0 0 / .65) 56%, rgb(0 0 0 / .29) 80%, rgb(0 0 0 / .18) 88%, rgb(0 0 0 / .11) 96%, rgb(0 0 0 / .04) 108%, rgb(0 0 0 / .01) 124%, rgb(0 0 0 / 0) 136%),
+        radial-gradient(20.8px 38.4px at 26px 40px, rgb(0 0 0 / 1) 0%, rgb(0 0 0 / .99) 41%, rgb(0 0 0 / .94) 50%, rgb(0 0 0 / .87) 56%, rgb(0 0 0 / .76) 62%, rgb(0 0 0 / .30) 78%, rgb(0 0 0 / .15) 84%, rgb(0 0 0 / .05) 91%, rgb(0 0 0 / 0) 100%),
+        linear-gradient(rgb(0 0 0 / .80) 26px, rgb(0 0 0 / .49) 38px, rgb(0 0 0 / .37) 42px, rgb(0 0 0 / .25) 50px, rgb(0 0 0 / .12) 60px, rgb(0 0 0 / .05) 68px, rgb(0 0 0 / 0) 77px);
+  mask-composite: add, intersect, add;
+  clip-path: path(evenodd, "M0 0H51V81H0Z M6 25a20 20 0 1 0 40 0a20 20 0 1 0 -40 0Z"); }
+/* pressed: the reference only hides the long shadow */
+.ap-push[aria-pressed="true"], .ap-push:active { --cast: 0; }
+/* ponytail: the movement is not in the reference; the PSD is static. 50 ms going down to respond at once, 120 ms going up so it can be seen */
+.ap-push::after { transition: opacity 120ms ease-out; }
+.ap-push:active::after, .ap-push[aria-pressed="true"]::after { transition-duration: 50ms; }
+.ap-push--olive { --face: linear-gradient(var(--olive-deep) -25%, var(--olive) 48.5%, var(--olive-hi) 125%);
+  --rim: linear-gradient(#9cae97 -12.5%, #79a269 61.25%, #0c4600 112.5%);
+  --face-line: inset 0 1px 1px rgb(0 0 0 / .26); --edge: rgb(21 105 0 / .27); --rim-line: #171616; --glint: .19; }
+/* orange: red cylinder in a dark 44px recess, with a lit lip at the top */
+.ap-push--signal { width: 50px; height: 50px; background: linear-gradient(var(--hollow-dark), var(--hollow-dark)) padding-box, var(--ring) border-box; box-shadow: var(--hole); }
+.ap-push--signal::before { inset: 2px 0 0 1px; box-shadow: none;
+  background: radial-gradient(13.5px 4.5px at 50% 13%, rgb(255 255 255 / .77), rgb(255 255 255 / 0)), linear-gradient(var(--signal-hi) 20%, #b61a00 47.5%, #751100 110%); }
+.ap-push--signal::after { z-index: 0; inset: 7px 3px 0 4px; width: auto; height: auto; margin: 0; border-radius: 50%; opacity: 1; -webkit-mask: none; mask: none; clip-path: none;
+  background: linear-gradient(#b82d0b 9%, #e53e00 91%);
+  box-shadow: inset 0 0 11px #b82900, inset -0.87px 0.5px 0 rgb(255 255 255 / .49), 0 0 1px rgb(255 251 251 / .27); }
+/* ponytail: the off state and the movement are not in the reference: the PSD draws this rocker once, on, with the upper half raised (2px of recess and 5px of lip at the top, nothing at the bottom).
+   Off is that geometry reversed: cylinder −2px and cap −7px, with 5px of lip and 2px of recess at the bottom. Nothing flips, because the light does not turn with the part.
+   Reflection: when off, the cap has a reflection at the bottom like the green button's, reaching the rim. The cap's inner shadow paints over its background and would dull it, so when off it drops 8px: it moves away from the bottom rim and darkens the pressed half.
+   It goes only in the off rule because a two-layer background changes the rim's antialiasing, and on must stay the same as the PSD; that is why it appears abruptly instead of fading in (an 80 ms jump does not let that show).
+   80 ms ease-in and LED at 50 ms, like the Rocker. :active names box-shadow so as not to cancel its transition if it arrives with the jump in progress. */
+.ap-push--signal::before { transition: transform 80ms ease-in; }
+.ap-push--signal::after, .ap-push--signal[aria-pressed="true"]::after { transition: transform 80ms ease-in, box-shadow 80ms ease-in; }
+.ap-push--signal:not([aria-pressed="true"])::before { transform: translateY(-2px); }
+.ap-push--signal:not([aria-pressed="true"])::after { transform: translateY(-7px);
+  background: radial-gradient(11px 12px at 50% 95%, rgb(255 255 255 / .17) 20%, rgb(255 255 255 / 0)), linear-gradient(#b82d0b 9%, #e53e00 91%);
+  box-shadow: inset 0 8px 11px #b82900, inset -0.87px 0.5px 0 rgb(255 255 255 / .49), 0 0 1px rgb(255 251 251 / .27); }
+@media (hover: hover) {
+  .ap-push--signal:active::after { transform: translateY(-6px); transition: transform 50ms ease-out, box-shadow 80ms ease-in; }
+  .ap-push--signal[aria-pressed="true"]:active::after { transform: translateY(-1px); }
+}
+
+/* KeyBank: 50px square keys with a 44px dish, in a recess with a ring */
+.ap-bank { display: inline-grid; gap: var(--space-2); }
+.ap-keys { display: inline-flex; border: 3px solid transparent; border-radius: var(--radius-xs);
+  background: linear-gradient(var(--hollow), var(--hollow)) padding-box, var(--ring) border-box; box-shadow: var(--hole); }
+.ap-key { position: relative; display: block; }
+.ap-key + .ap-key { margin-left: -1px; }
+.ap-key input { position: absolute; inset: 0; z-index: 2; margin: 0; opacity: 0; cursor: pointer; }
+.ap-key span { position: relative; display: block; width: 50px; height: 50px; border-radius: 2px;
+  background: var(--key); box-shadow: 0 0 0 1px #000, inset 0 0 1px rgb(255 255 255 / .2); }
+.ap-key span::before { content: ""; position: absolute; inset: 3px; border-radius: 50%;
+  background: radial-gradient(11px 7.5px at 50% 81%, rgb(255 255 255 / .9) 20%, rgb(255 255 255 / 0)), linear-gradient(#ded8cc -25%, var(--key-face) 12.5%, #fff 123.5%);
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / .01), inset 0 0 0 .5px rgb(255 255 255 / .27), 0 0 0 .5px rgb(255 255 255 / .27); }
+.ap-key input:checked + span::after { content: ""; position: absolute; left: 17px; top: 17px; width: 16px; height: 17px; border-radius: 50%;
+  background: var(--dot); box-shadow: inset -1.73px 1px 3px rgb(0 0 0 / .16), 0 3px 4px rgb(223 114 55 / .35); }
+.ap-key input:active + span { box-shadow: 0 0 0 1px #000, var(--pressed); }
+.ap-key input:focus-visible + span { z-index: 1; outline: 2px solid var(--focus); outline-offset: 2px; }
+.ap-key-caps { display: flex; padding: 0 3px; }
+.ap-key-caps span { width: 49px; text-align: center; }
+.ap-key-caps span:first-child { width: 50px; }
+
+/* Knob, selector: 4px ring on the 59.33px path (vmsk of Shape 29), center (381, 179.67); turns with aria-valuenow (0, 1 or 2 = −30°, 0°, 30°) */
+.ap-dial { position: relative; width: 100px; height: 92px; }
+.ap-dial .ap-scale { position: absolute; }
+.ap-knob { --turn: 0deg; position: absolute; left: 16.33px; top: 22px; width: 67.33px; height: 67.33px; box-sizing: border-box; padding: 0; border: 4px solid transparent; border-radius: 50%; cursor: pointer;
+  background: linear-gradient(var(--frame) 4px, var(--frame-hi) calc(100% - 4px)) border-box; }
+.ap-knob[aria-valuenow="0"] { --turn: -30deg; }
+.ap-knob[aria-valuenow="2"] { --turn: 30deg; }
+/* the fill reaches r = 29.17: the centered 1px stroke at 33% stays entirely translucent and lets the ring and shadow show through, like the PS knockout. The gradient spans the layer's 60px */
+.ap-knob::before { content: ""; position: absolute; z-index: 1; inset: .5px; border-radius: 50%; transform: rotate(var(--turn)); transition: transform .2s ease-out;
+  background: linear-gradient(90deg, #dad3c4, #b9b2a3 20%, #999385 41%, #cfc9bc 45%, #cfc9bc 55%, #f0eee8 60%, #dfdacd 74%, #d8d1c1) 50% 0 / 60px 100%;
+  box-shadow: inset -1.73px 1px 0 -.5px rgb(255 255 255 / .71), 0 0 0 1px rgb(0 0 0 / .33); }
+/* box = rect of the Switch layer (60×62 at (351, 148)). `bottom` lens (#7f7869, 21×3, layer alpha + inner shadow) row by row; on top of everything, the 2×9 indicator */
+.ap-knob::after { content: ""; position: absolute; z-index: 1; left: -.33px; top: -2px; width: 60px; height: 62px; pointer-events: none; transform-origin: 30px 31.67px; transform: rotate(var(--turn)); transition: transform .2s ease-out;
+  background: linear-gradient(90deg, rgb(9 9 7 / 0) 3.5px, rgb(9 9 7 / .30) 4.5px, rgb(19 18 16 / .67) 6.5px, rgb(30 28 25 / 1) 10.5px, rgb(19 18 16 / .67) 14.5px, rgb(9 9 7 / .30) 16.5px, rgb(9 9 7 / 0) 17.5px) 20px 60px / 21px 1px no-repeat,
+    linear-gradient(90deg, rgb(6 5 5 / .20) .5px, rgb(19 18 15 / .72) 2.5px, rgb(48 45 40 / 1) 4.5px, rgb(91 86 75 / 1) 10.5px, rgb(48 45 40 / 1) 16.5px, rgb(19 18 15 / .72) 18.5px, rgb(6 5 5 / .20) 20.5px) 20px 59px / 21px 1px no-repeat,
+    linear-gradient(90deg, rgb(255 255 255 / .06) .5px, rgb(230 230 229 / .27) 3.5px, rgb(133 128 120 / .49) 5.5px, rgb(110 104 91 / .89) 6.5px, rgb(119 112 98 / 1) 7.5px, rgb(125 118 103 / 1) 10.5px, rgb(119 112 98 / 1) 13.5px, rgb(110 104 91 / .89) 14.5px, rgb(133 128 120 / .49) 15.5px, rgb(230 230 229 / .27) 17.5px, rgb(255 255 255 / .06) 20.5px) 20px 58px / 21px 1px no-repeat,
+    linear-gradient(90deg, rgb(255 255 255 / 0) 2.5px, rgb(255 255 255 / .11) 5.5px, rgb(255 255 255 / .26) 6.5px, rgb(255 255 255 / .29) 10.5px, rgb(255 255 255 / .26) 14.5px, rgb(255 255 255 / .11) 15.5px, rgb(255 255 255 / 0) 18.5px) 20px 57px / 21px 1px no-repeat,
+    linear-gradient(rgb(0 0 0 / .14), rgb(0 0 0 / .14)) 29px 1px / 1px 9px no-repeat,
+    linear-gradient(#d7b9be -9.25%, #9f5962 28.3%, #97676b 112.5%) 29px 1px / 2px 9px no-repeat,
+    linear-gradient(rgb(255 255 255 / .66), rgb(255 255 255 / .66)) 29px 10px / 2px 1px no-repeat; }
+/* painted shadow of the PSD: Shape 32 (black ellipse) + Shadow (ellipse ∩ vertical), stacked with mask-composite. It passes over the ring and under the knob (z-index: 1), with no clip.
+   ponytail: Shadow is gray in the PSD; here, black equivalent relative to what lies beneath it (ring or panel)
+   ponytail: the PSD only shows 0°. When turned, the shadow follows the lens along the arc and keeps pointing down, because the light does not turn with the part.
+   --turn is on the child and does not reach here, so it reads aria-valuenow: this works for the three selector positions, not for free rotation */
+.ap-dial::after { --turn: 0deg; content: ""; position: absolute; left: 37px; top: 71px; width: 27px; height: 44px; pointer-events: none;
+  transform-origin: 13px -15.33px; transform: rotate(var(--turn)) translateY(28px) rotate(calc(-1 * var(--turn))) translateY(-28px); transition: transform .2s ease-out;
+  background: #000;
+  mask: radial-gradient(7.5px 6px at 13.5px 12px, rgb(0 0 0 / .70) 0%, rgb(0 0 0 / .69) 13%, rgb(0 0 0 / .60) 39%, rgb(0 0 0 / .50) 56%, rgb(0 0 0 / .41) 69%, rgb(0 0 0 / .29) 87%, rgb(0 0 0 / .20) 103%, rgb(0 0 0 / .11) 121%, rgb(0 0 0 / .06) 137%, rgb(0 0 0 / .03) 154%, rgb(0 0 0 / .01) 171%, rgb(0 0 0 / 0) 195%),
+        radial-gradient(13.5px 72px at 13.5px 1px, rgb(0 0 0 / 1) 39.4%, rgb(0 0 0 / .90) 46.5%, rgb(0 0 0 / .68) 53.7%, rgb(0 0 0 / .40) 60.6%, rgb(0 0 0 / .16) 67.8%, rgb(0 0 0 / .04) 75.1%, rgb(0 0 0 / .01) 81.8%, rgb(0 0 0 / 0) 88.6%),
+        linear-gradient(rgb(0 0 0 / .35) 14.5px, rgb(0 0 0 / .34) 15.5px, rgb(0 0 0 / .32) 16.5px, rgb(0 0 0 / .30) 17.5px, rgb(0 0 0 / .26) 18.5px, rgb(0 0 0 / .24) 19.5px, rgb(0 0 0 / .20) 21.5px, rgb(0 0 0 / .17) 23.5px, rgb(0 0 0 / .15) 25.5px, rgb(0 0 0 / .12) 27.5px, rgb(0 0 0 / .10) 29.5px, rgb(0 0 0 / .08) 31.5px, rgb(0 0 0 / .06) 33.5px, rgb(0 0 0 / .04) 35.5px, rgb(0 0 0 / .03) 37.5px, rgb(0 0 0 / .02) 39.5px, rgb(0 0 0 / .01) 41.5px, rgb(0 0 0 / 0) 43.5px);
+  mask-composite: add, intersect, add; }
+.ap-dial:has(.ap-knob[aria-valuenow="0"])::after { --turn: -30deg; }
+.ap-dial:has(.ap-knob[aria-valuenow="2"])::after { --turn: 30deg; }
+
+/* Knob, knurled: 61px base, 60-tooth gear with a conic highlight, 45px flat cap (vmsk path of the PSD); turns with --turn */
+.ap-knurl-wrap { position: relative; display: inline-flex; align-items: center; gap: var(--space-1); }
+/* ponytail: the highlight goes at (-1px, 1px) and not at var(--emboss) because drop-shadow takes the .5px to 0 at 1x and no highlight remains under the bottom rim */
+.ap-pointer { width: 0; height: 0; border-style: solid; border-width: 5.5px 0 5.5px 14px; border-color: transparent transparent transparent var(--signal); filter: drop-shadow(-1px 1px 0 #fff); }
+.ap-knurl { --turn: 0deg; position: relative; width: 67px; height: 67px; box-sizing: border-box; border: 3px solid transparent; border-radius: 50%; cursor: grab; touch-action: none;
+  background: linear-gradient(var(--alu-shade), var(--alu-shade)) padding-box, var(--ring-knob) border-box; box-shadow: inset 0 0 0 1px #5e5d5d; }
+.ap-knurl::before { content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(#fff, #bfbfbf 15%, #525252 50%, #bfbfbf 85%, #eee);
+  -webkit-mask: radial-gradient(circle, #000 23px, transparent 23.5px), repeating-conic-gradient(from var(--turn), #000 0 3deg, transparent 0 6deg);
+  mask: radial-gradient(circle, #000 23px, transparent 23.5px), repeating-conic-gradient(from var(--turn), #000 0 3deg, transparent 0 6deg); }
+/* ponytail: the indicator dot is not in the reference; without it the value cannot be seen */
+/* the cap does not turn: its rim and inner shadow are light, and the light does not turn with the part. Only the dot moves, 15.91px from the center */
+.ap-knurl::after { content: ""; position: absolute; z-index: 1; inset: 8px; box-sizing: border-box; border: 1px solid transparent; border-radius: 50%;
+  background: radial-gradient(circle at calc(50% + 15.91px * sin(var(--turn))) calc(50% - 15.91px * cos(var(--turn))), var(--graphite) 2.5px, transparent 3px) padding-box, linear-gradient(var(--alu), var(--alu)) padding-box, linear-gradient(#fff, #8a8a96) border-box;
+  box-shadow: 0 0 0 1px var(--alu-edge), inset -1.73px 1px 4px rgb(0 0 0 / .11); }
+/* painted shadow of the PSD (Shape 4): it passes over the ring and the teeth, under the cap, which has z-index: 1. At 80%, from #000 to #b4b4b4 measured on the reference image (the layer says #000 → #b9b9b9, but over a stretch much shorter than its box); its axis sits 1px to the left of the knob's */
+.ap-knurl-wrap::after { content: ""; position: absolute; right: 2px; top: 14px; width: 65px; height: 106px; opacity: .8; pointer-events: none;
+  background: linear-gradient(#000 32.7px, #9c9c9c 67px, #a6a6a6 70px, #afafaf 73px, #b4b4b4 76px);
+  mask: radial-gradient(23px 46px at 32.5px 38.5px, #000 48%, rgb(0 0 0 / .99) 56%, rgb(0 0 0 / .96) 64%, rgb(0 0 0 / .90) 72%, rgb(0 0 0 / .81) 80%, rgb(0 0 0 / .67) 88%, rgb(0 0 0 / .53) 96%, rgb(0 0 0 / .38) 104%, rgb(0 0 0 / .23) 112%, rgb(0 0 0 / .13) 120%, rgb(0 0 0 / .06) 128%, rgb(0 0 0 / .02) 136%, rgb(0 0 0 / 0) 144%),
+        linear-gradient(rgb(0 0 0 / .12) 10px, rgb(0 0 0 / .35) 13px, rgb(0 0 0 / .48) 16px, rgb(0 0 0 / .60) 19px, rgb(0 0 0 / .70) 22px, rgb(0 0 0 / .79) 25px, rgb(0 0 0 / .87) 28px, rgb(0 0 0 / .91) 32px, rgb(0 0 0 / .92) 37px, rgb(0 0 0 / .87) 43px, rgb(0 0 0 / .82) 49px, rgb(0 0 0 / .75) 55px, rgb(0 0 0 / .68) 61px, rgb(0 0 0 / .61) 67px, rgb(0 0 0 / .54) 73px, rgb(0 0 0 / .49) 79px, rgb(0 0 0 / .44) 85px);
+  mask-composite: intersect; }
+
+/* Lever: black slot with a ring; down (1) is on */
+.ap-lever-ctl { position: relative; display: inline-grid; grid-template-columns: auto auto; column-gap: var(--space-3); }
+.ap-lever-ctl .ap-scale { align-self: center; }
+.ap-lever { appearance: none; -webkit-appearance: none; margin: 0; position: relative; grid-column: 2; grid-row: 1 / 3; width: 10px; height: 45px; box-sizing: border-box;
+  border: 2px solid transparent; border-radius: 2px; cursor: pointer; background: linear-gradient(#000, #000) padding-box, var(--ring) border-box; box-shadow: inset 0 0 2px #000; }
+/* flat: 18×9 cream thumb with a light stripe and a shadow at 30° */
+.ap-lever::after { content: ""; position: absolute; left: -6px; top: 4px; width: 18px; height: 9px; transition: transform .15s ease-out;
+  background: linear-gradient(#f3f1ea, #f3f1ea) 0 3px / 100% 3px no-repeat, linear-gradient(#fff -12.5%, #dad1af 23.75%, #d6d0b6 27.5%, #94915d 38.75%, #b2b1a4 92.5%);
+  box-shadow: var(--handle); }
+.ap-lever:checked::after { transform: translateY(24px); }
+/* cylinder: rod and black lever hanging from the slot; up (0) points upward */
+.ap-lever-ctl:has(.ap-lever--bat) .ap-scale:first-child { align-self: start; }
+.ap-lever-ctl:has(.ap-lever--bat) .ap-scale:nth-child(2) { align-self: end; }
+/* rod: goes in the slot's background to leave the two pseudo-elements free. ponytail: the stops are the measured axis (y = 245–261) mirrored from the center, because the PSD draws it only once and its gradients come out S-shaped, not straight */
+.ap-lever--bat { --arm-edge: linear-gradient(#181818 .5px, #363636 3.5px, #7c7c7c 9.5px, #939393 12.5px, #9d9d9d 15.5px 21.5px, #939393 24.5px, #7c7c7c 27.5px, #363636 33.5px, #181818 36.5px);
+  width: 15px; height: 43px; border-width: 3px; border-radius: 3px; box-shadow: none;
+  background: var(--arm-edge) 2px 0 / 1px 100% no-repeat padding-box, var(--arm-edge) 6px 0 / 1px 100% no-repeat padding-box,
+    linear-gradient(#0b0b0b .5px, #242424 3.5px, #606060 9.5px, #787878 12.5px, #848484 15.5px 21.5px, #787878 24.5px, #606060 27.5px, #242424 33.5px, #0b0b0b 36.5px) 2px 0 / 5px 100% no-repeat padding-box,
+    linear-gradient(#000, #000) padding-box, var(--ring) border-box; }
+/* body: capsule with both ends rounded and a 1px stroke; the second stroke is row 296, which sits at 60% in the PSD. ponytail: state 0 and the movement are not in the reference: nothing flips, the body rises 32px and the cap 52px, so it slides to its other end */
+.ap-lever--bat::before { content: ""; position: absolute; left: -4px; top: 18px; width: 16px; height: 32px; border-radius: 8px / 7px; transform: translateY(-32px); transition: transform .15s ease-out;
+  box-shadow: 0 0 0 1px #313131, 0 1px 0 1px rgb(49 49 49 / .6);
+  background: linear-gradient(90deg, #1c1c1c .5px, #1f1f1f 1.5px, #2c2c2c 2.5px, #3c3c3c 3.5px, #4c4c4c 4.5px, #595959 5.5px, #5e5e5e 6.5px, #5c5c5c 7.5px, #585858 8.5px, #525252 9.5px, #4a4a4a 10.5px, #414141 11.5px, #363636 12.5px, #2a2a2a 13.5px, #202020 14.5px, #191919 15.5px); }
+/* cap: ellipse on top of the body, with the light edge at the top (shadow at −94°, 1px, 48%) */
+.ap-lever--bat::after { left: -4px; top: 38px; width: 16px; height: 12px; border-radius: 50%; transform: translateY(-52px);
+  background: linear-gradient(#202020 .5px, #575757 11.5px); box-shadow: 0 -1px 0 rgb(255 255 255 / .48); }
+.ap-lever--bat:checked::before, .ap-lever--bat:checked::after { transform: none; }
+/* long shadow: Shape 4 layer as black equivalent, ellipse ∩ vertical gradient; only at 1, with the added fade at the same pace as the lever */
+.ap-lever-ctl:has(.ap-lever--bat)::after { content: ""; position: absolute; z-index: -1; right: -1px; top: 40px; width: 19px; height: 32px; opacity: 0; transition: opacity .15s ease-out; pointer-events: none;
+  background: #000;
+  mask: radial-gradient(7px 25px at 9.5px 8px, #000 60%, rgb(0 0 0 / .95) 70%, rgb(0 0 0 / .84) 80%, rgb(0 0 0 / .66) 90%, rgb(0 0 0 / .45) 100%, rgb(0 0 0 / .27) 110%, rgb(0 0 0 / .11) 120%, rgb(0 0 0 / .02) 130%, transparent 140%),
+        linear-gradient(rgb(0 0 0 / .62) 1.5px, rgb(0 0 0 / .48) 8.5px, rgb(0 0 0 / .32) 14.5px, rgb(0 0 0 / .21) 18.5px, rgb(0 0 0 / .14) 21.5px, rgb(0 0 0 / .08) 24.5px, rgb(0 0 0 / .03) 27.5px, transparent 31.5px);
+  mask-composite: intersect; }
+.ap-lever-ctl:has(.ap-lever--bat:checked)::after { opacity: 1; }
+
+/* Rocker: 26×42 orange rocker in a dark 28×44 recess; the pressed face changes half when checked */
+.ap-rocker { appearance: none; -webkit-appearance: none; margin: 0; position: relative; width: 34px; height: 50px; box-sizing: border-box; border: 3px solid transparent; border-radius: var(--radius-xs); cursor: pointer;
+  background: linear-gradient(var(--hollow-deep), var(--hollow-deep)) padding-box, var(--ring) border-box; box-shadow: var(--hole); }
+.ap-rocker::before { content: ""; position: absolute; inset: 1px; border-radius: 2px;
+  background: linear-gradient(rgb(255 255 255 / .8), rgb(255 255 255 / .8)) 0 0 / 3px 7px no-repeat,
+              linear-gradient(rgb(255 255 255 / .8), rgb(255 255 255 / .8)) 100% 0 / 3px 7px no-repeat,
+              linear-gradient(rgb(255 255 255 / .7), rgb(255 255 255 / .7)) 2px 1px / 22px 5px no-repeat,
+              var(--rail) 0 5px / 3px 36px no-repeat, var(--rail) 100% 5px / 3px 36px no-repeat,
+              linear-gradient(var(--signal-hi) 20%, #de6e4d 112.5%);
+  box-shadow: inset 0 0 1px rgb(203 51 12 / .75); }
+.ap-rocker::after { content: ""; position: absolute; inset: 7px 2px 2px; border-radius: 1px;
+  background: var(--rail) -1px -1px / 3px 36px no-repeat, var(--rail) calc(100% + 1px) -1px / 3px 36px no-repeat, linear-gradient(var(--signal-deep) 37.7%, #dc3b02 61.5%);
+  box-shadow: inset 0 0 10px rgb(162 36 0 / .75), inset -0.87px 0.5px 3px rgb(255 255 255 / .1), 0 -1px 0 rgb(255 255 255 / .79); }
+/* ponytail: the checked state and the movement are not in the reference: the PSD draws the rocker once and it is static.
+   The pressed face rises by the 5px it has spare at the top (6 at the top and 1 at the bottom); nothing flips, because the light does not turn with the part.
+   80 ms ease-in because the spring accelerates up to the stop; 50 ms on press, like the PushButton. The LED jumps when crossing the midpoint. */
+.ap-rocker::after { transition: transform 80ms ease-in; }
+.ap-rocker:checked::after { transform: translateY(-5px); }
+@media (hover: hover) {
+  .ap-rocker:active::after { transform: translateY(-1px); transition: transform 50ms ease-out; }
+  .ap-rocker:checked:active::after { transform: translateY(-4px); }
+}
+.ap-ctl:has(.ap-rocker, .ap-push--signal) .ap-led { transition: background-color 0s 50ms, box-shadow 0s 50ms; }
+
+/* ChannelSwitch: 101×41 arrow (path of the .ai embedded in the layer, plus half of its .406 stroke) that turns over a printed scale from 1 to 7. Box origin: (283, 271) of the PSD; axis at the center of the arrow, (333.5, 342.5).
+   ponytail: the PSD only draws step 4. The axis and the angles are not in the reference: each step points to the inner end of its line, measured from that axis; a real selector would have equal steps */
+.ap-chan { --turn: 0deg; position: relative; display: block; width: 136px; height: 140px; }
+.ap-chan:has(label:nth-of-type(1) input:checked) { --turn: -66deg; }
+.ap-chan:has(label:nth-of-type(2) input:checked) { --turn: -42.5deg; }
+.ap-chan:has(label:nth-of-type(3) input:checked) { --turn: -20.4deg; }
+.ap-chan:has(label:nth-of-type(5) input:checked) { --turn: 20.4deg; }
+.ap-chan:has(label:nth-of-type(6) input:checked) { --turn: 42.5deg; }
+.ap-chan:has(label:nth-of-type(7) input:checked) { --turn: 66deg; }
+/* long shadow: copy of the silhouette with the layer's transformation (Trnf of SoLd) and its gaussian filter. The layer says 8.8; in Chrome and Firefox 10 measures better. It moves with the arrow but keeps falling down: the offset does not turn */
+.ap-chan::before { content: ""; position: absolute; left: 0; top: 51px; width: 101px; height: 41px; pointer-events: none; transition: transform .2s ease-out;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100.406 41.2217' preserveAspectRatio='none'%3E%3Cpath fill='%23171717' d='M100.41 20.59C100.41 22.73 97.6 23.89 97.6 23.89L57.3 39.3C53.94 40.98 48.94 41.22 48.94 41.22L9.18 41.22C5.05 41.22 3.03 37.3 3.03 37.3C0 29.58 0 20.61 0 20.61C0 11.66 3.03 3.92 3.03 3.92C5.05 0 9.18 0 9.18 0L48.94 0C48.94 0 53.94 .25 57.3 1.92L97.6 17.09C97.6 17.09 100.41 18.5 100.41 20.59Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; filter: blur(10px);
+  transform: translate(1.18px, 7.52px) rotate(var(--turn)) matrix(1.0239, -.0486, .0679, .9512, 0, 0); }
+/* arrow: the image turns and stores its regions in the channels (alpha = everything with the 1px stroke, R = silhouette, G = 4px ring, B = 1px edge). The filter is outside the rotation and paints the layer effects from there: the shapes turn and the light does not, as in Photoshop. */
+.ap-chan-arrow { position: absolute; inset: 0; pointer-events: none; filter: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='f' filterUnits='userSpaceOnUse' x='-4' y='16' width='110' height='112' color-interpolation-filters='sRGB'%3E%3CfeColorMatrix in='SourceGraphic' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0' result='sil'/%3E%3CfeColorMatrix in='SourceGraphic' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0' result='aro'/%3E%3CfeColorMatrix in='SourceGraphic' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0' result='filo'/%3E%3CfeFlood flood-color='%23171717'/%3E%3CfeComposite in2='sil' operator='in' result='cara'/%3E%3CfeOffset in='sil' dy='5' result='o'/%3E%3CfeComposite in='sil' in2='o' operator='out' result='linea'/%3E%3CfeFlood flood-color='%233a3a3a' result='abajo'/%3E%3CfeFlood flood-color='%231e1d1d' x='-4' y='16' width='110' height='55' result='arriba'/%3E%3CfeMerge%3E%3CfeMergeNode in='abajo'/%3E%3CfeMergeNode in='arriba'/%3E%3C/feMerge%3E%3CfeGaussianBlur stdDeviation='0 1.7'/%3E%3CfeComposite in2='aro' operator='in' result='anillo'/%3E%3CfeFlood flood-color='%23f5f5f5' flood-opacity='.15'/%3E%3CfeComposite in2='filo' operator='in' result='resplandor'/%3E%3CfeOffset in='sil' dx='-1' dy='1' result='o'/%3E%3CfeComposite in='sil' in2='o' operator='out' result='b'/%3E%3CfeFlood flood-color='%23fff' flood-opacity='.26'/%3E%3CfeComposite in2='b' operator='in' result='brillo'/%3E%3CfeGaussianBlur in='sil' stdDeviation='1.5'/%3E%3CfeOffset dy='-1' result='o'/%3E%3CfeComposite in='sil' in2='o' operator='out' result='fondo'/%3E%3CfeMerge%3E%3CfeMergeNode in='SourceAlpha'/%3E%3CfeMergeNode in='cara'/%3E%3CfeMergeNode in='linea'/%3E%3CfeMergeNode in='anillo'/%3E%3CfeMergeNode in='resplandor'/%3E%3CfeMergeNode in='brillo'/%3E%3CfeMergeNode in='fondo'/%3E%3C/feMerge%3E%3C/filter%3E%3C/svg%3E#f"); }
+.ap-chan-arrow::before { content: ""; position: absolute; left: -2px; top: 49px; width: 105px; height: 45px; transition: transform .2s ease-out; transform: rotate(var(--turn));
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1.988 -2.011 104.382 45.243' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cpath id='p' d='M100.41 20.59C100.41 22.73 97.6 23.89 97.6 23.89L57.3 39.3C53.94 40.98 48.94 41.22 48.94 41.22L9.18 41.22C5.05 41.22 3.03 37.3 3.03 37.3C0 29.58 0 20.61 0 20.61C0 11.66 3.03 3.92 3.03 3.92C5.05 0 9.18 0 9.18 0L48.94 0C48.94 0 53.94 .25 57.3 1.92L97.6 17.09C97.6 17.09 100.41 18.5 100.41 20.59Z'/%3E%3CclipPath id='c'%3E%3Cuse href='%23p'/%3E%3C/clipPath%3E%3C/defs%3E%3Cuse href='%23p' stroke='%23000' stroke-width='2'/%3E%3Cuse href='%23p' fill='%23f00'/%3E%3Cg clip-path='url(%23c)' fill='none'%3E%3Cuse href='%23p' stroke='%23ff0' stroke-width='8'/%3E%3Cuse href='%23p' stroke='%23fff' stroke-width='2'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; }
+/* printed lines: black at 80%. ponytail: the highlight goes at (-1px, 1px) and not at var(--emboss) because drop-shadow takes the .5px to 0 at 1x and the highlight stays behind the line */
+.ap-chan::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='136' height='140'%3E%3Cpath d='M73.32 20.19L79.6 11.9M90.03 35.21L93 31.9M90.03 107.79L93 111.1M73.32 122.81L79.6 131.1' fill='none' stroke='%23000' stroke-opacity='.8'/%3E%3Cpath d='M79.4 11h42.6v1H79.4ZM93 31h29v1H93ZM104.18 51h17.76v1H104.18ZM108.75 71h13.25v1H108.75ZM104.18 91h17.82v1H104.18ZM93 111h29v1H93ZM79.4 131h42.6v1H79.4Z' fill-opacity='.8'/%3E%3C/svg%3E"); filter: drop-shadow(-1px 1px 0 #fff); }
+/* each step: 20px row, from the line's hook to the number; the number sits space-1 from its line */
+.ap-chan-step { position: absolute; left: 73px; width: 63px; height: 20px; box-sizing: border-box; padding-left: 53px; display: flex; align-items: center; }
+.ap-chan-step:nth-of-type(1) { top: 0px; }
+.ap-chan-step:nth-of-type(2) { top: 20px; }
+.ap-chan-step:nth-of-type(3) { top: 40px; }
+.ap-chan-step:nth-of-type(4) { top: 60px; }
+.ap-chan-step:nth-of-type(5) { top: 80px; }
+.ap-chan-step:nth-of-type(6) { top: 100px; }
+.ap-chan-step:nth-of-type(7) { top: 120px; }
+.ap-chan-step input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.ap-chan-step input:focus-visible + span { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) { .ap-chan::before, .ap-chan-arrow::before, .ap-knob::before, .ap-knob::after, .ap-dial::after, .ap-lever::after, .ap-lever--bat::before, .ap-lever-ctl:has(.ap-lever--bat)::after, .ap-push::after, .ap-push--signal::before, .ap-push--signal[aria-pressed="true"]::after, .ap-push--signal:active::after, .ap-rocker::after, .ap-rocker:active::after, .ap-ctl:has(.ap-rocker, .ap-push--signal) .ap-led { transition: none; } }

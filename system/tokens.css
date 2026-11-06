@@ -1,0 +1,50 @@
+/* Aparato — variables from tokens.json (version 2) */
+:root, [data-theme="light"] {
+  --ground-hi: #ffffff;
+  --ground: #e6e5e5;
+  --ground-shade: #cfcecd;
+  --frame: #aca79b;
+  --frame-hi: #fdfcfb;
+  --hollow: #877e7e;
+  --hollow-dark: #4d4d4d;
+  --hollow-deep: #424242;
+  --cream: #f4f2ed;
+  --cream-shade: #e2ddd1;
+  --cream-deep: #9f9887;
+  --key: #e9e5db;
+  --key-face: #d8d1c1;
+  --graphite: #181818;
+  --graphite-hi: #5e5e5e;
+  --alu: #cdcdcd;
+  --alu-shade: #9f9f9f;
+  --alu-edge: #858585;
+  --ink: #141414;
+  --ink-muted: #4f4e4a;
+  --signal: #ed5700;
+  --signal-hi: #f96037;
+  --signal-deep: #bb2e0a;
+  --signal-glow: #ffb398;
+  --signal-ink: #931422;
+  --dot: #df7237;
+  --olive: #596e51;
+  --olive-deep: #2b3829;
+  --olive-hi: #b6c5b0;
+  --focus: var(--ink);
+  --emboss: -0.87px 0.5px 0 #ffffff;
+  --hole: inset 0 0 14px #000000;
+  --pressed: inset 0 1px 5px #000000;
+  --handle: -1.73px 1px 3px #000000;
+  --well: inset 0 2px 3px rgba(0,0,0,0.35), 0 1px 0 #ffffff;
+}
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-round: 999px;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
